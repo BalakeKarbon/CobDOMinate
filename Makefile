@@ -1,0 +1,39 @@
+SRC_DIR := ./src
+BUILD_DIR := ./build
+
+all: $(BUILD_DIR)/lib/libcobdom.a
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(BUILD_DIR)/lib: $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/lib
+
+$(BUILD_DIR)/lib/libcobdom.a: $(BUILD_DIR)/cobdom.o | $(BUILD_DIR)/lib
+	emar rcs $@ $<
+
+$(BUILD_DIR)/cobdom.o: $(BUILD_DIR)/cobdom.c
+	emcc -c $< -o $@
+
+$(BUILD_DIR)/cobdom.c: $(SRC_DIR)/cobdom.cob | $(BUILD_DIR)
+	(cd $(SRC_DIR) && cobc -C -o $(abspath $@) $(notdir $<))
+	find $(BUILD_DIR) -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
+	#cobc -C $< -o $@
+
+$(BUILD_DIR)/test: $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)/test
+
+$(BUILD_DIR)/test/test.c: all | $(BUILD_DIR)/test 
+	cobc -x -C -o $@ ./debug/main.cob -K COBDOM-VERSION
+	find $(BUILD_DIR)/test -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
+
+$(BUILD_DIR)/test/test.js: $(BUILD_DIR)/test/test.c
+	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob -s STANDALONE_WASM=1
+
+test: $(BUILD_DIR)/test/test.js 
+	node $<
+
+clean:
+	rm -rf $(BUILD_DIR)
+
+.PHONY: all clean
