@@ -1,5 +1,6 @@
 SRC_DIR := ./src
 BUILD_DIR := ./build
+DEBUG_DIR := ./debug
 
 all: $(BUILD_DIR)/lib/libcobdom.a
 
@@ -24,14 +25,14 @@ $(BUILD_DIR)/test: $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/test
 
 $(BUILD_DIR)/test/test.c: all | $(BUILD_DIR)/test 
-	cobc -x -C -o $@ ./debug/main.cob -K COBDOM-VERSION
+	cobc -x -C -o $@ ./debug/host.cob -K COBDOM-VERSION -K HOST-TEST
 	find $(BUILD_DIR)/test -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
 
 $(BUILD_DIR)/test/test.js: $(BUILD_DIR)/test/test.c
 	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob -s STANDALONE_WASM=1
 
 test: $(BUILD_DIR)/test/test.js 
-	node $<
+	cp $(DEBUG_DIR)/index.html $(BUILD_DIR)/test/index.html
 
 clean:
 	rm -rf $(BUILD_DIR)
