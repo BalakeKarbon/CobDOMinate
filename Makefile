@@ -25,11 +25,11 @@ $(BUILD_DIR)/test: $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/test
 
 $(BUILD_DIR)/test/test.c: all | $(BUILD_DIR)/test 
-	cobc -x -C -o $@ ./debug/host.cob -K COBDOM-VERSION -K COBDOM-CREATE-ELEMENT -K COBDOM-APPEND-CHILD -K COBDOM-REMOVE-CHILD -K COBDOM-INNER-HTML -K HOST-TEST
+	cobc -x -C -o $@ ./debug/host.cob -K COBDOM-INIT -K COBDOM-VERSION -K COBDOM-CREATE-ELEMENT -K COBDOM-APPEND-CHILD -K COBDOM-REMOVE-CHILD -K COBDOM-INNER-HTML -K COBDOM-ADD-EVENT-LISTENER -K HOST-TEST -K TESTFUNC
 	find $(BUILD_DIR)/test -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
 
 $(BUILD_DIR)/test/test.js: $(BUILD_DIR)/test/test.c
-	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob -s STANDALONE_WASM=1
+	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob -s EXPORTED_FUNCTIONS=_cob_init,_TESTFUNC -s EXPORTED_RUNTIME_METHODS=ccall,cwrap -s STANDALONE_WASM=1
 
 test: $(BUILD_DIR)/test/test.js 
 	cp $(DEBUG_DIR)/index.html $(BUILD_DIR)/test/index.html
