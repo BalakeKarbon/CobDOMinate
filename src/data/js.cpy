@@ -36,7 +36,7 @@
 003600     10 PART-A PIC X(13) VALUE '.innerHTML="'.
 003700*    10 PART-B PIC X(2) VALUE '"'.
 003800   05 ADD-EVENT-LISTENER.
-003900     10 PART-A PIC X(20) VALUE '.addEventListener("'.
+003900     10 PART-A PIC X(19) VALUE '.addEventListener("'.
 004000     10 PART-B PIC X(3) VALUE '",'.
 004100*    10 PART-C PIC X() VALUE ')'.
 004200*We can either define all of these here in subsections or use MOVE

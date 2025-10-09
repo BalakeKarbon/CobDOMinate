@@ -9,5 +9,12 @@
 		Oh so your a cool kid? No javascript? U on a microwave or something?
 	</noscript>
 	<script src="test.js"></script>
+	<script>
+		Module['onRuntimeInitialized'] = function() {
+			console.log("wasm loaded ");
+			Module.ccall ("cob_init", null, [], []);
+			Module.ccall ("HOST_TEST", null, [], []);
+    		}
+	</script>
 </body>
 </html>
