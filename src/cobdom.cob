@@ -117,12 +117,14 @@
 011700   CALL 'emscripten_run_script_int' USING BY REFERENCE 
 011800     WS-JS-COMMAND RETURNING LS-RETURN.
 011900   GOBACK.
-012000*TO-DO put returns in these functions to verify success! This
-012100*This will have to be done by wrapping scripts into a function
-012200*with a try catch statement or something of the sort.
-012300*COBDOM-INNER-HTML SECTION.
-012400*ENTRY 'COBDOM-INNER-HTML' USING
-012500*So here this gets crazy, since we are using eval, we can return
-012600*the variable name, or we could store the objects in a structure
-012700*and return its key/index, or we could create and add it relying
-012800*only on the id.
+012000*TO-DO: Add a paragraph for setting class name, setting style,
+012100*and perhaps setting the overall page style code/maybe set
+012200*style by class name?
+012300*This will have to be done by wrapping scripts into a function
+012400*with a try catch statement or something of the sort.
+012500*COBDOM-INNER-HTML SECTION.
+012600*ENTRY 'COBDOM-INNER-HTML' USING
+012700*So here this gets crazy, since we are using eval, we can return
+012800*the variable name, or we could store the objects in a structure
+012900*and return its key/index, or we could create and add it relying
+013000*only on the id.

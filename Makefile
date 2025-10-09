@@ -18,7 +18,7 @@ $(BUILD_DIR)/cobdom.o: $(BUILD_DIR)/cobdom.c
 
 $(BUILD_DIR)/cobdom.c: $(SRC_DIR)/cobdom.cob | $(BUILD_DIR)
 	(cd $(SRC_DIR) && cobc -C -o $(abspath $@) $(notdir $<) -K emscripten_run_script_int)
-	find $(BUILD_DIR) -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
+	#find $(BUILD_DIR) -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
 	#cobc -C $< -o $@
 
 $(BUILD_DIR)/example: $(BUILD_DIR)
@@ -26,7 +26,7 @@ $(BUILD_DIR)/example: $(BUILD_DIR)
 
 $(BUILD_DIR)/example/example.c: all | $(BUILD_DIR)/example 
 	cobc -C -o $@ ./example/host.cob -K COBDOM-VERSION -K COBDOM-CREATE-ELEMENT -K COBDOM-APPEND-CHILD -K COBDOM-REMOVE-CHILD -K COBDOM-INNER-HTML -K COBDOM-ADD-EVENT-LISTENER -K EXAMPLE -K TESTFUNC
-	find $(BUILD_DIR)/example -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
+	#find $(BUILD_DIR)/example -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
 
 $(BUILD_DIR)/example/example.js: $(BUILD_DIR)/example/example.c
 	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob -s EXPORTED_FUNCTIONS=_cob_init,_TESTFUNC,_EXAMPLE -s EXPORTED_RUNTIME_METHODS=ccall,cwrap
