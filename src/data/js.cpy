@@ -26,7 +26,10 @@
 002600   05 REMOVE-CHILD.
 002700     10 PART-A PIC X(27) VALUE '.removeChild('.
 002800     10 PART-B PIC X(2) VALUE ')'.
-002900*We can either define all of these here in subsections or use MOVE
-003000*in the function itself. Static constants would be faster though.
-003100*How do we want to do data naming? A, B, C with dynamic data
-003200*between?
+002900   05 INNER-HTML.
+003000     10 PART-A PIC X(13) VALUE '.innerHTML="'.
+003100     10 PART-B PIC X(2) VALUE '"'.
+003200*We can either define all of these here in subsections or use MOVE
+003300*in the function itself. Static constants would be faster though.
+003400*How do we want to do data naming? A, B, C with dynamic data
+003500*between?
