@@ -39,7 +39,9 @@
 003900     10 PART-A PIC X(19) VALUE '.addEventListener("'.
 004000     10 PART-B PIC X(2) VALUE '",'.
 004100*    10 PART-C PIC X() VALUE ')'.
-004200*We can either define all of these here in subsections or use MOVE
-004300*in the function itself. Static constants would be faster though.
-004400*How do we want to do data naming? A, B, C with dynamic data
-004500*between?
+004200   05 CLASS-NAME.
+004300     10 PART-A PIC X(12) VALUE '.className="'.
+004400*We can either define all of these here in subsections or use MOVE
+004500*in the function itself. Static constants would be faster though.
+004600*How do we want to do data naming? A, B, C with dynamic data
+004700*between?
