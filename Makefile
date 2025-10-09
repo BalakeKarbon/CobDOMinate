@@ -25,7 +25,7 @@ $(BUILD_DIR)/test: $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/test
 
 $(BUILD_DIR)/test/test.c: all | $(BUILD_DIR)/test 
-	cobc -C -o $@ ./debug/host.cob -K COBDOM-INIT -K COBDOM-VERSION -K COBDOM-CREATE-ELEMENT -K COBDOM-APPEND-CHILD -K COBDOM-REMOVE-CHILD -K COBDOM-INNER-HTML -K COBDOM-ADD-EVENT-LISTENER -K HOST_TEST -K TESTFUNC
+	cobc -C -o $@ ./debug/host.cob -K COBDOM-VERSION -K COBDOM-CREATE-ELEMENT -K COBDOM-APPEND-CHILD -K COBDOM-REMOVE-CHILD -K COBDOM-INNER-HTML -K COBDOM-ADD-EVENT-LISTENER -K HOST_TEST -K TESTFUNC
 	find $(BUILD_DIR)/test -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
 
 $(BUILD_DIR)/test/test.js: $(BUILD_DIR)/test/test.c

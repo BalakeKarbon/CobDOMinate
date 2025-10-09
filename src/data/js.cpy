@@ -1,4 +1,4 @@
-000100 01 WS-JS-TEST PIC X(36) VALUE 'console.log("Hello from Javascript
+000100 01 WS-JS-TEST PIC X(35) VALUE 'console.log("Hello from Javascript
 000200-'")'.
 000300*REMEMBER these are only accesible to the library.
 000400*Look into UNSTRING as far as getting pic values to be the proper
@@ -19,25 +19,25 @@
 001900*Again, arbitrary size, need to figure that out.
 002000 01 WS-JS-COMMANDS.
 002100   05 STATUS-WRAPPER.
-002200     10 PART-A PIC X(21) VALUE '(function() { try { '.
-002300     10 PART-B PIC X(48) VALUE '; return 1; } catch (error) { retu
+002200     10 PART-A PIC X(20) VALUE '(function() { try { '.
+002300     10 PART-B PIC X(47) VALUE '; return 1; } catch (error) { retu
 002400-'rn -1; } })()'.
-002500   05 CREATE-ELEMENT.
-002600     10 PART-A PIC X(26) VALUE '=document.createElement("'.
-002700     10 PART-B PIC X(3) VALUE '")'.
-002800   05 APPEND-CHILD.
-002900     10 PART-A PIC X(27) VALUE '.appendChild('.
-003000*    10 PART-B PIC X(2) VALUE ')'.
-003100   05 REMOVE-CHILD.
-003200     10 PART-A PIC X(27) VALUE '.removeChild('.
-003300*    10 PART-B PIC X(2) VALUE ')'.
-003400*TO-DO reduce these duplicate ) and quotes.
+002500*TO-DO: Veryify all of these PIC sizes.
+002600   05 CREATE-ELEMENT.
+002700     10 PART-A PIC X(25) VALUE '=document.createElement("'.
+002800     10 PART-B PIC X(2) VALUE '")'.
+002900   05 APPEND-CHILD.
+003000     10 PART-A PIC X(26) VALUE '.appendChild('.
+003100*    10 PART-B PIC X(2) VALUE ')'.
+003200   05 REMOVE-CHILD.
+003300     10 PART-A PIC X(26) VALUE '.removeChild('.
+003400*    10 PART-B PIC X(2) VALUE ')'.
 003500   05 INNER-HTML.
-003600     10 PART-A PIC X(13) VALUE '.innerHTML="'.
+003600     10 PART-A PIC X(12) VALUE '.innerHTML="'.
 003700*    10 PART-B PIC X(2) VALUE '"'.
 003800   05 ADD-EVENT-LISTENER.
 003900     10 PART-A PIC X(19) VALUE '.addEventListener("'.
-004000     10 PART-B PIC X(3) VALUE '",'.
+004000     10 PART-B PIC X(2) VALUE '",'.
 004100*    10 PART-C PIC X() VALUE ')'.
 004200*We can either define all of these here in subsections or use MOVE
 004300*in the function itself. Static constants would be faster though.
