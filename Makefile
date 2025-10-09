@@ -17,7 +17,7 @@ $(BUILD_DIR)/cobdom.o: $(BUILD_DIR)/cobdom.c
 	emcc -c $< -o $@
 
 $(BUILD_DIR)/cobdom.c: $(SRC_DIR)/cobdom.cob | $(BUILD_DIR)
-	(cd $(SRC_DIR) && cobc -C -o $(abspath $@) $(notdir $<) -K emscripten_run_script)
+	(cd $(SRC_DIR) && cobc -C -o $(abspath $@) $(notdir $<) -K emscripten_run_script_int)
 	find $(BUILD_DIR) -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
 	#cobc -C $< -o $@
 
