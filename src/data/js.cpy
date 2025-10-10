@@ -46,9 +46,16 @@
 004600     10 PART-A PIC X(7) VALUE '.style.'.
 004700   05 SET-COOKIE.
 004800     10 PART-A PIC X(17) VALUE 'document.cookie="'.
-004900*    10 PART-B PIC X(1) VALUE '='. Instead we use WS-EQUALS
-005000*    10 PART-C PIC X(1) VALUE '"'. Instead we use WS-DOUBLE-QUOTE
-005100*We can either define all of these here in subsections or use MOVE
-005200*in the function itself. Static constants would be faster though.
-005300*How do we want to do data naming? A, B, C with dynamic data
-005400*between?
+004900     10 PART-B PIC X(21) VALUE '+ encodeURIComponent('.
+005000*    10 PART-B PIC X(1) VALUE '='. Instead we use WS-EQUALS
+005100*    10 PART-C PIC X(1) VALUE '"'. Instead we use WS-DOUBLE-QUOTE
+005200*  05 GET-COOKIE.
+005300*    10 PART-A PIC X() VALUE '((name) => { const match = document.
+005400*'cookie.match(new RegExp("(^| )" + '
+005500*    10 PART-B PIC X() VALUE ' + "=([^;]+)")); result = match ? de
+005600*'codeURIComponent(match[2]) : null; })("'
+005700*    10 PART-C PIC X() VALUE'")'.
+005800*We can either define all of these here in subsections or use MOVE
+005900*in the function itself. Static constants would be faster though.
+006000*How do we want to do data naming? A, B, C with dynamic data
+006100*between?
