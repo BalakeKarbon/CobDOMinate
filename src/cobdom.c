@@ -21,7 +21,11 @@ EM_JS(int, cd_append_child, (int variable_name,int parent_name), {
 	try {
 		let variableName = UTF8ToString(variable_name);
 		let parentName = UTF8ToString(parent_name);
-		parentName.appendChild(window[variableName]);
+		if (parentName == 'body') {
+			document.body.appendChild(window[variableName]);
+		} else {
+			window[parentName].appendChild(window[variableName]);
+		}
 		return 1;
 	} catch (e) {
 		console.log('CobDOMinate Error:');
@@ -36,7 +40,11 @@ EM_JS(int, cd_remove_child, (int variable_name,int parent_name), {
 	try {
 		let variableName = UTF8ToString(variable_name);
 		let parentName = UTF8ToString(parent_name);
-		parentName.removeChild(window[variableName]);
+		if (parentName == 'body') {
+			document.body.removeChild(window[variableName]);
+		} else {
+			window[parentName].removeChild(window[variableName]);
+		}
 		return 1;
 	} catch (e) {
 		console.log('CobDOMinate Error:');
@@ -62,12 +70,18 @@ EM_JS(int, cd_inner_html, (int variable_name,int html_content), {
 int cobdom_inner_html(const char *variable_name, const char *html_content) {
 	return cd_inner_html((intptr_t)variable_name,(intptr_t)html_content);
 }
-EM_JS(int, cd_add_event_listener, (int variable_name,int event_type,int js_code), {
+EM_JS(int, cd_add_event_listener, (int variable_name,int event_type,int cobol_func), {
 	try {
 		let variableName = UTF8ToString(variable_name);
 		let eventType = UTF8ToString(event_type);
-		let jsCode = UTF8ToString(js_code);
-		window[variableName].addEventListener(eventType,jsCode);
+		let cobolFunc = UTF8ToString(cobol_func);
+		let handler = function () {
+			Module.ccall(cobolFunc, null, [], []);
+		};
+		if (!window._cobHandlers) window._cobHandlers = {};
+		let handlerKey = variableName + ':' + eventType;
+		window._cobHandlers[handlerKey] = handler;
+		window[variableName].addEventListener(eventType,handler);
 		return 1;
 	} catch (e) {
 		console.log('CobDOMinate Error:');
@@ -75,20 +89,87 @@ EM_JS(int, cd_add_event_listener, (int variable_name,int event_type,int js_code)
 		return -1;
 	}
 });
-int cobdom_add_event_listener(const char *variable_name, const char *event_type, const char *js_code) { //JS or function?
-	return cd_add_event_listener((intptr_t)variable_name,(intptr_t)event_type,(intptr_t)js_code);
+int cobdom_add_event_listener(const char *variable_name, const char *event_type, const char *cobol_func) {
+	return cd_add_event_listener((intptr_t)variable_name,(intptr_t)event_type,(intptr_t)cobol_func);
 }
-//int cobdom_class_name(const char *variable_name, const char *class_name) {
-//
-//}
-//int cobdom_style(const char *variable_name, const char *style_) { //Style String?
-//
-//}
+EM_JS(int, cd_remove_event_listener, (int variable_name,int event_type), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let eventType = UTF8ToString(event_type);
+		let handlerKey = variableName + ':' + eventType;
+		if (window._cobHandler && window._cobHandler[handlerKey]) {
+			window[variableName].removeEventListener(eventType,window._cobHandler[handlerKey]);
+			delete window._cobHandlers[handlerKey];
+			return 1;
+		} else {
+			console.log('CobDOMinate Error:');
+			console.log('  No handler found for remove event listener: ' + e);
+			return -1;
+		}
+	} catch (e) {
+		console.log('CobDOMinate Error:');
+		console.log('  Remove event listener: ' + e);
+		return -1;
+	}
+});
+int cobdom_remove_event_listener(const char *variable_name, const char *event_type) { //JS or function?
+	return cd_remove_event_listener((intptr_t)variable_name,(intptr_t)event_type);
+}
+
+EM_JS(int, cd_set_class, (int variable_name,int class_name), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let nameClass = UTF8ToString(class_name);
+		window[variableName].className=nameClass;
+		return 1;
+	} catch (e) {
+		console.log('CobDOMinate Error:');
+		console.log('  Set class: ' + e);
+		return -1;
+	}
+});
+int cobdom_set_class(const char *variable_name, const char *class_name) {
+	return cd_set_class((intptr_t)variable_name,(intptr_t)class_name);
+}
+EM_JS(int, cd_style, (int variable_name,int style_key,int style_value), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let styleKey = UTF8ToString(style_key);
+		let styleValue = UTF8ToString(style_value);
+		variableName.style[styleKey]=styleValue;
+		return 1;
+	} catch (e) {
+		console.log('CobDOMinate Error:');
+		console.log('  Style: ' + e);
+		return -1;
+	}
+});
+int cobdom_style(const char *variable_name, const char *style_key, const char *style_value) { 
+	return cd_style((intptr_t)variable_name,(intptr_t)style_key,(intptr_t)style_value);
+}
+EM_JS(int, cd_class_style, (int class_name,int style_key,int style_value), {
+	try {
+		let className = UTF8ToString(class_name);
+		let styleKey = UTF8ToString(style_key);
+		let styleValue = UTF8ToString(style_value);
+		document.querySelectorAll(className).forEach(el => {
+			el.style[styleKey] = styleValue;
+		});
+		return 1;
+	} catch (e) {
+		console.log('CobDOMinate Error:');
+		console.log('  Style: ' + e);
+		return -1;
+	}
+});
+int cobdom_class_style(const char *class_name, const char *style_key, const char *style_value) { 
+	return cd_class_style((intptr_t)class_name,(intptr_t)style_key,(intptr_t)style_value);
+}
 EM_JS(int, cd_set_cookie, (int data,int cookie_name), {
 	try {
 		let cookieName = UTF8ToString(cookie_name);
 		let content = UTF8ToString(data);
-		document.cookie=cookieName + encodeURIComponent(content);
+		document.cookie=cookieName + content;
 		return 1;
 	} catch (e) {
 		console.log('CobDOMinate Error:');
@@ -102,7 +183,9 @@ int cobdom_set_cookie(const char *data, const char *cookie_name) {
 EM_JS(int, cd_get_cookie, (int data,int cookie_name), {
 	try {
 		let cookieName = UTF8ToString(cookie_name);
-		let content = decodeURIComponent(document.cookie.split('; ').find(row => row.startsWith(cookieName + '='))?.split('=')[1] || '');
+		let content = document.cookie.split('; ').find(row => row.startsWith(cookieName + '='))?.split('=')[1] || '';
+		console.log(cookieName);
+		console.log(content);
 		stringToUTF8(content, data, 1024);
 		return 1;
 	} catch (e) {
