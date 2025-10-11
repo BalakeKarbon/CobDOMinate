@@ -21,6 +21,7 @@ EM_JS(int, cd_append_child, (int variable_name,int parent_name), {
 	try {
 		let variableName = UTF8ToString(variable_name);
 		let parentName = UTF8ToString(parent_name);
+		console.log(parentName);
 		if (parentName == 'body') {
 			document.body.appendChild(window[variableName]);
 		} else {
@@ -58,7 +59,7 @@ int cobdom_remove_child(const char *variable_name, const char *parent_name) {
 EM_JS(int, cd_inner_html, (int variable_name,int html_content), {
 	try {
 		let variableName = UTF8ToString(variable_name);
-		let htmlContent = UTF8ToString(parent_name);
+		let htmlContent = UTF8ToString(html_content);
 		window[variableName].innerHTML=htmlContent;
 		return 1;
 	} catch (e) {
