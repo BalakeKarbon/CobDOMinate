@@ -286,3 +286,20 @@ int cobdom_fetch(char *func, char *url, char *method, char *body) {
 	cobdom_string(body);
 	return cd_fetch((intptr_t)func,(intptr_t)url,(intptr_t)method,(intptr_t)body);
 }
+EM_JS(int, cd_href, (int variable_name,int href), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let hrefString = UTF8ToString(href);
+		window[variableName].href=hrefString;
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Href: ' + e);
+		return -1;
+	}
+});
+int cobdom_href(char *variable_name, char *href) { 
+	cobdom_string(variable_name);
+	cobdom_string(href);
+	return cd_href((intptr_t)variable_name,(intptr_t)href);
+}
