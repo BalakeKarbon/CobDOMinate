@@ -15,11 +15,11 @@ char* cobdom_string(char* cobol_string) {
 EM_JS(int, cd_test_string, (int my_string), {
 	try {
 		let myString = UTF8ToString(my_string);
-		console.log(myString + "-end.");
+		console.error(myString + "-end.");
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Test string: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Test string: ' + e);
 		return -1;
 	}
 });
@@ -35,8 +35,8 @@ EM_JS(int, cd_create_element, (int variable_name,int element_type), {
 		window[variableName] = document.createElement(elementType);
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Create element: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Create element: ' + e);
 		return -1;
 	}
 });
@@ -56,8 +56,8 @@ EM_JS(int, cd_append_child, (int variable_name,int parent_name), {
 		}
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Append child: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Append child: ' + e);
 		return -1;
 	}
 });
@@ -77,8 +77,8 @@ EM_JS(int, cd_remove_child, (int variable_name,int parent_name), {
 		}
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Remove child: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Remove child: ' + e);
 		return -1;
 	}
 });
@@ -94,8 +94,8 @@ EM_JS(int, cd_inner_html, (int variable_name,int html_content), {
 		window[variableName].innerHTML=htmlContent;
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Inner HTML: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Inner HTML: ' + e);
 		return -1;
 	}
 });
@@ -118,8 +118,8 @@ EM_JS(int, cd_add_event_listener, (int variable_name,int event_type,int cobol_fu
 		window[variableName].addEventListener(eventType,handler);
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Add event listener: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Add event listener: ' + e);
 		return -1;
 	}
 });
@@ -139,13 +139,13 @@ EM_JS(int, cd_remove_event_listener, (int variable_name,int event_type), {
 			delete window._cobHandlers[handlerKey];
 			return 1;
 		} else {
-			console.log('CobDOMinate Error:');
-			console.log('  No handler found for remove event listener: ' + e);
+			console.error('CobDOMinate Error:');
+			console.error('  No handler found for remove event listener: ' + e);
 			return -1;
 		}
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Remove event listener: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Remove event listener: ' + e);
 		return -1;
 	}
 });
@@ -162,8 +162,8 @@ EM_JS(int, cd_set_class, (int variable_name,int class_name), {
 		window[variableName].className=nameClass;
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Set class: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Set class: ' + e);
 		return -1;
 	}
 });
@@ -180,8 +180,8 @@ EM_JS(int, cd_style, (int variable_name,int style_key,int style_value), {
 		window[variableName].style[styleKey]=styleValue;
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Style: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Style: ' + e);
 		return -1;
 	}
 });
@@ -201,8 +201,8 @@ EM_JS(int, cd_class_style, (int class_name,int style_key,int style_value), {
 		});
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Style: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Style: ' + e);
 		return -1;
 	}
 });
@@ -219,8 +219,8 @@ EM_JS(int, cd_set_cookie, (int data,int cookie_name), {
 		document.cookie=cookieName + content;
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Set cookie: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Set cookie: ' + e);
 		return -1;
 	}
 });
@@ -233,13 +233,13 @@ EM_JS(int, cd_get_cookie, (int data,int cookie_name), {
 	try {
 		let cookieName = UTF8ToString(cookie_name);
 		let content = document.cookie.split('; ').find(row => row.startsWith(cookieName + '='))?.split('=')[1] || '';
-		console.log(cookieName);
-		console.log(content);
+		console.error(cookieName);
+		console.error(content);
 		stringToUTF8(content, data, 1024);
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Get cookie: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Get cookie: ' + e);
 		return -1;
 	}
 });
@@ -265,7 +265,7 @@ EM_JS(int, cd_fetch, (int func,int url,int method,int body), {
 			return response.arrayBuffer();
 		}).then(data => {
 			//Module.ccall(cobolFunc, null, ['string'], ['test text']);
-			//console.log(data.byteLength | 0);
+			//console.error(data.byteLength | 0);
 			Module.ccall(cobolFunc, null, ['string','string'], [data.byteLength.toString().padStart(10,'0'),new TextDecoder().decode(data)]);
 			//Module.ccall('cob_call', null, ['string','number','array'], [cobolFunc,2,[data.byteLength | 0,new TextDecoder().decode(data)]]);
 //TO-DO: We either have to figure out how to get an int passed to our cobol function correctly or we need to start calling using cob_call_cobol
@@ -274,8 +274,8 @@ EM_JS(int, cd_fetch, (int func,int url,int method,int body), {
 		});
 		return 1;
 	} catch (e) {
-		console.log('CobDOMinate Error:');
-		console.log('  Fetch: ' + e);
+		console.error('CobDOMinate Error:');
+		console.error('  Fetch: ' + e);
 		return -1;
 	}
 });
