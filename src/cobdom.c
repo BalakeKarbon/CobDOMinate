@@ -233,8 +233,8 @@ EM_JS(int, cd_get_cookie, (int data,int cookie_name), {
 	try {
 		let cookieName = UTF8ToString(cookie_name);
 		let content = document.cookie.split('; ').find(row => row.startsWith(cookieName + '='))?.split('=')[1] || '';
-		console.error(cookieName);
-		console.error(content);
+		//console.error(cookieName);
+		//console.error(content);
 		stringToUTF8(content, data, 1024);
 		return 1;
 	} catch (e) {
