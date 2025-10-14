@@ -2,18 +2,13 @@
 #include <stdint.h>
 
 char* cobdom_string(char* cobol_string) {
-	// Find the length manually
 	int len = 0;
 	while (cobol_string[len] != '\0') {
 		len++;
 	}
-	
-	// Move backwards over spaces
 	while (len > 0 && cobol_string[len - 1] == ' ') {
 		len--;
 	}
-	
-	// Null-terminate at the new length
 	cobol_string[len] = '\0';
 }
 EM_JS(int, cd_test_string, (int my_string), {
@@ -53,7 +48,6 @@ EM_JS(int, cd_append_child, (int variable_name,int parent_name), {
 	try {
 		let variableName = UTF8ToString(variable_name);
 		let parentName = UTF8ToString(parent_name);
-		console.log(parentName);
 		if (parentName == 'body') {
 			document.body.appendChild(window[variableName]);
 		} else {
@@ -182,7 +176,7 @@ EM_JS(int, cd_style, (int variable_name,int style_key,int style_value), {
 		let variableName = UTF8ToString(variable_name);
 		let styleKey = UTF8ToString(style_key);
 		let styleValue = UTF8ToString(style_value);
-		variableName.style[styleKey]=styleValue;
+		window[variableName].style[styleKey]=styleValue;
 		return 1;
 	} catch (e) {
 		console.log('CobDOMinate Error:');
@@ -201,7 +195,7 @@ EM_JS(int, cd_class_style, (int class_name,int style_key,int style_value), {
 		let className = UTF8ToString(class_name);
 		let styleKey = UTF8ToString(style_key);
 		let styleValue = UTF8ToString(style_value);
-		document.querySelectorAll(className).forEach(el => {
+		document.querySelectorAll('.' + className).forEach(el => {
 			el.style[styleKey] = styleValue;
 		});
 		return 1;

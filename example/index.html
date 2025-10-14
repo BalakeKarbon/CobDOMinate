@@ -11,7 +11,7 @@
 	<script src="example.js"></script>
 	<script>
 		Module['onRuntimeInitialized'] = function() {
-			console.log("wasm loaded ");
+			//console.log("wasm loaded ");
 			Module.ccall ("cob_init", null, [], []);
 			Module.ccall ("EXAMPLE", null, [], []);
     		}
