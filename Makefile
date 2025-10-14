@@ -1,8 +1,8 @@
 SRC_DIR := ./src
 BUILD_DIR := ./build
 DEBUG_DIR := ./example
-EXAMPLE_BASE_FLAGS = $(shell ctags -x $(SRC_DIR)/cobdom.c | awk '{printf "-K %s ", $$1}' | sed 's/ $$//') 
-#EXAMPLE_BASE_FLAGS = $(shell ctags -x --c-kinds=f $(SRC_DIR)/cobdom.c | awk '{printf "-K %s ", $$1}' | sed 's/ $$//') 
+#EXAMPLE_BASE_FLAGS = $(shell ctags -x $(SRC_DIR)/cobdom.c | awk '{printf "-K %s ", $$1}' | sed 's/ $$//') 
+EXAMPLE_BASE_FLAGS = $(shell ctags -x --c-kinds=f $(SRC_DIR)/cobdom.c | awk '{printf "-K %s ", $$1}' | sed 's/ $$//') 
 LIB_INSTALL_DIR = /usr/share/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten
 
 all: $(BUILD_DIR)/lib/libcobdom.a
