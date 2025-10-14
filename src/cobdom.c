@@ -1,5 +1,6 @@
 #include <emscripten.h>
 #include <stdint.h>
+//#include <libcob.h>
 
 char* cobdom_string(char* cobol_string) {
 	int len = 0;
@@ -22,7 +23,7 @@ EM_JS(int, cd_test_string, (int my_string), {
 		return -1;
 	}
 });
-int cobdom_test_string(const char* my_string) {
+int cobdom_test_string(char* my_string) {
 	cobdom_string(my_string);
 	return cd_test_string((intptr_t)my_string);
 }
@@ -39,7 +40,7 @@ EM_JS(int, cd_create_element, (int variable_name,int element_type), {
 		return -1;
 	}
 });
-int cobdom_create_element(const char *variable_name,const char *element_type) {
+int cobdom_create_element(char *variable_name,char *element_type) {
 	cobdom_string(variable_name);
 	cobdom_string(element_type);
 	return cd_create_element((intptr_t)variable_name,(intptr_t)element_type);
@@ -60,7 +61,7 @@ EM_JS(int, cd_append_child, (int variable_name,int parent_name), {
 		return -1;
 	}
 });
-int cobdom_append_child(const char *variable_name, const char *parent_name) {
+int cobdom_append_child(char *variable_name, char *parent_name) {
 	cobdom_string(variable_name);
 	cobdom_string(parent_name);
 	return cd_append_child((intptr_t)variable_name,(intptr_t)parent_name);
@@ -81,7 +82,7 @@ EM_JS(int, cd_remove_child, (int variable_name,int parent_name), {
 		return -1;
 	}
 });
-int cobdom_remove_child(const char *variable_name, const char *parent_name) {
+int cobdom_remove_child(char *variable_name, char *parent_name) {
 	cobdom_string(variable_name);
 	cobdom_string(parent_name);
 	return cd_remove_child((intptr_t)variable_name,(intptr_t)parent_name);
@@ -98,7 +99,7 @@ EM_JS(int, cd_inner_html, (int variable_name,int html_content), {
 		return -1;
 	}
 });
-int cobdom_inner_html(const char *variable_name, const char *html_content) {
+int cobdom_inner_html(char *variable_name, char *html_content) {
 	cobdom_string(variable_name);
 	cobdom_string(html_content);
 	return cd_inner_html((intptr_t)variable_name,(intptr_t)html_content);
@@ -122,7 +123,7 @@ EM_JS(int, cd_add_event_listener, (int variable_name,int event_type,int cobol_fu
 		return -1;
 	}
 });
-int cobdom_add_event_listener(const char *variable_name, const char *event_type, const char *cobol_func) {
+int cobdom_add_event_listener(char *variable_name, char *event_type, char *cobol_func) {
 	cobdom_string(variable_name);
 	cobdom_string(event_type);
 	cobdom_string(cobol_func);
@@ -148,7 +149,7 @@ EM_JS(int, cd_remove_event_listener, (int variable_name,int event_type), {
 		return -1;
 	}
 });
-int cobdom_remove_event_listener(const char *variable_name, const char *event_type) {
+int cobdom_remove_event_listener(char *variable_name, char *event_type) {
 	cobdom_string(variable_name);
 	cobdom_string(event_type);
 	return cd_remove_event_listener((intptr_t)variable_name,(intptr_t)event_type);
@@ -166,7 +167,7 @@ EM_JS(int, cd_set_class, (int variable_name,int class_name), {
 		return -1;
 	}
 });
-int cobdom_set_class(const char *variable_name, const char *class_name) {
+int cobdom_set_class(char *variable_name, char *class_name) {
 	cobdom_string(variable_name);
 	cobdom_string(class_name);
 	return cd_set_class((intptr_t)variable_name,(intptr_t)class_name);
@@ -184,7 +185,7 @@ EM_JS(int, cd_style, (int variable_name,int style_key,int style_value), {
 		return -1;
 	}
 });
-int cobdom_style(const char *variable_name, const char *style_key, const char *style_value) { 
+int cobdom_style(char *variable_name, char *style_key, char *style_value) { 
 	cobdom_string(variable_name);
 	cobdom_string(style_key);
 	cobdom_string(style_value);
@@ -205,7 +206,7 @@ EM_JS(int, cd_class_style, (int class_name,int style_key,int style_value), {
 		return -1;
 	}
 });
-int cobdom_class_style(const char *class_name, const char *style_key, const char *style_value) {
+int cobdom_class_style(char *class_name, char *style_key, char *style_value) {
 	cobdom_string(class_name);
 	cobdom_string(style_key);
 	cobdom_string(style_value);
@@ -223,7 +224,7 @@ EM_JS(int, cd_set_cookie, (int data,int cookie_name), {
 		return -1;
 	}
 });
-int cobdom_set_cookie(const char *data, const char *cookie_name) {
+int cobdom_set_cookie(char *data, char *cookie_name) {
 	cobdom_string(data);
 	cobdom_string(cookie_name);
 	return cd_set_cookie((intptr_t)data,(intptr_t)cookie_name);
@@ -242,8 +243,46 @@ EM_JS(int, cd_get_cookie, (int data,int cookie_name), {
 		return -1;
 	}
 });
-int cobdom_get_cookie(char *data, const char *cookie_name) {
+int cobdom_get_cookie(char *data, char *cookie_name) {
 	cobdom_string(data);
 	cobdom_string(cookie_name);
 	return cd_get_cookie((intptr_t)data,(intptr_t)cookie_name);
+}
+EM_JS(int, cd_fetch, (int func,int url,int method,int body), {
+	try {
+		let requestURL = UTF8ToString(url);
+		let cobolFunc = UTF8ToString(func);
+		let methodString = UTF8ToString(method);
+		let bodyString = UTF8ToString(body);
+		let fetchOptions = { method: methodString };
+		if (methodString === 'POST') {
+			fetchOptions.body = bodyString;
+		}
+		fetch(requestURL, fetchOptions).then(response => {
+			if(!response.ok) {
+				throw new Error(error);
+			}
+			return response.arrayBuffer();
+		}).then(data => {
+			//Module.ccall(cobolFunc, null, ['string'], ['test text']);
+			//console.log(data.byteLength | 0);
+			Module.ccall(cobolFunc, null, ['string','string'], [data.byteLength.toString().padStart(10,'0'),new TextDecoder().decode(data)]);
+			//Module.ccall('cob_call', null, ['string','number','array'], [cobolFunc,2,[data.byteLength | 0,new TextDecoder().decode(data)]]);
+//TO-DO: We either have to figure out how to get an int passed to our cobol function correctly or we need to start calling using cob_call_cobol
+		}).catch(error => {
+			throw new Error(error);
+		});
+		return 1;
+	} catch (e) {
+		console.log('CobDOMinate Error:');
+		console.log('  Fetch: ' + e);
+		return -1;
+	}
+});
+int cobdom_fetch(char *func, char *url, char *method, char *body) {
+	cobdom_string(func);
+	cobdom_string(url);
+	cobdom_string(method);
+	cobdom_string(body);
+	return cd_fetch((intptr_t)func,(intptr_t)url,(intptr_t)method,(intptr_t)body);
 }
