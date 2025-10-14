@@ -216,7 +216,7 @@ EM_JS(int, cd_set_cookie, (int data,int cookie_name), {
 	try {
 		let cookieName = UTF8ToString(cookie_name);
 		let content = UTF8ToString(data);
-		document.cookie=cookieName + content;
+		document.cookie=cookieName +'='+ content;
 		return 1;
 	} catch (e) {
 		console.error('CobDOMinate Error:');
@@ -232,9 +232,10 @@ int cobdom_set_cookie(char *data, char *cookie_name) {
 EM_JS(int, cd_get_cookie, (int data,int cookie_name), {
 	try {
 		let cookieName = UTF8ToString(cookie_name);
+		//console.log(document.cookie);
 		let content = document.cookie.split('; ').find(row => row.startsWith(cookieName + '='))?.split('=')[1] || '';
-		//console.error(cookieName);
-		//console.error(content);
+		//console.log(cookieName);
+		//console.log(content);
 		stringToUTF8(content, data, 1024);
 		return 1;
 	} catch (e) {
@@ -244,7 +245,7 @@ EM_JS(int, cd_get_cookie, (int data,int cookie_name), {
 	}
 });
 int cobdom_get_cookie(char *data, char *cookie_name) {
-	cobdom_string(data);
+	//cobdom_string(data);
 	cobdom_string(cookie_name);
 	return cd_get_cookie((intptr_t)data,(intptr_t)cookie_name);
 }
