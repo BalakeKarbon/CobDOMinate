@@ -177,7 +177,11 @@ EM_JS(int, cd_style, (int variable_name,int style_key,int style_value), {
 		let variableName = UTF8ToString(variable_name);
 		let styleKey = UTF8ToString(style_key);
 		let styleValue = UTF8ToString(style_value);
-		window[variableName].style[styleKey]=styleValue;
+		if (variableName == 'body') {
+			document.body[styleKey]=styleValue;
+		} else {
+			window[variableName].style[styleKey]=styleValue;
+		}
 		return 1;
 	} catch (e) {
 		console.error('CobDOMinate Error:');
@@ -206,6 +210,7 @@ EM_JS(int, cd_class_style, (int class_name,int style_key,int style_value), {
 		return -1;
 	}
 });
+//Note! This must be called after the elements are appended to the document otherwise they cannot be found!
 int cobdom_class_style(char *class_name, char *style_key, char *style_value) {
 	cobdom_string(class_name);
 	cobdom_string(style_key);
