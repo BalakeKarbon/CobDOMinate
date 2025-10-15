@@ -271,8 +271,12 @@ EM_JS(int, cd_fetch, (int func,int url,int method,int body), {
 			return response.arrayBuffer();
 		}).then(data => {
 			//Module.ccall(cobolFunc, null, ['string'], ['test text']);
-			//console.error(data.byteLength | 0);
-			Module.ccall(cobolFunc, null, ['string','string'], [data.byteLength.toString().padStart(10,'0'),new TextDecoder().decode(data)]);
+			let len = data.byteLength;
+			let ptr = _malloc(len);
+			if (ptr === 0) throw new Error("  Fetch: Malloc failed");
+			let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
+			heapBytes.set(new Uint8Array(data));
+			Module.ccall(cobolFunc, null, ['string','number'], [len.toString().padStart(10,'0'),ptr]);
 			//Module.ccall('cob_call', null, ['string','number','array'], [cobolFunc,2,[data.byteLength | 0,new TextDecoder().decode(data)]]);
 //TO-DO: We either have to figure out how to get an int passed to our cobol function correctly or we need to start calling using cob_call_cobol
 		}).catch(error => {

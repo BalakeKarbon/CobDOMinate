@@ -51,7 +51,7 @@ $(BUILD_DIR)/example/example.c: all | $(BUILD_DIR)/example
 	#find $(BUILD_DIR)/example -type f -name '*.c' -exec sed -i '/module->module_cancel\.funcptr =/ s/^/\/\//' {} +
 
 $(BUILD_DIR)/example/example.js: $(BUILD_DIR)/example/example.c
-	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob -s EXPORTED_FUNCTIONS=_cob_init,_EXAMPLE,_LAYOUT,_FETCHCALLBACK,_TAB1,_TAB2,_TAB3 -s EXPORTED_RUNTIME_METHODS=ccall,cwrap
+	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob -s EXPORTED_FUNCTIONS=_cob_init,_EXAMPLE,_LAYOUT,_FETCHCALLBACK,_TAB1,_TAB2,_TAB3 -s EXPORTED_RUNTIME_METHODS=ccall,cwrap,_malloc,HEAP8
 	#-s STANDALONE_WASM=1
 
 example: $(BUILD_DIR)/example/example.js 
