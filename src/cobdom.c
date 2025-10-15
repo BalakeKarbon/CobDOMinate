@@ -178,7 +178,7 @@ EM_JS(int, cd_style, (int variable_name,int style_key,int style_value), {
 		let styleKey = UTF8ToString(style_key);
 		let styleValue = UTF8ToString(style_value);
 		if (variableName == 'body') {
-			document.body[styleKey]=styleValue;
+			document.body.style[styleKey]=styleValue;
 		} else {
 			window[variableName].style[styleKey]=styleValue;
 		}
