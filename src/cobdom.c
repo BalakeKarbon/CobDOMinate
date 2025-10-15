@@ -313,3 +313,20 @@ int cobdom_href(char *variable_name, char *href) {
 	cobdom_string(href);
 	return cd_href((intptr_t)variable_name,(intptr_t)href);
 }
+EM_JS(int, cd_src, (int variable_name,int src), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let srcString = UTF8ToString(src);
+		window[variableName].src=srcString;
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  SRC: ' + e);
+		return -1;
+	}
+});
+int cobdom_src(char *variable_name, char *src) { 
+	cobdom_string(variable_name);
+	cobdom_string(src);
+	return cd_href((intptr_t)variable_name,(intptr_t)src);
+}
