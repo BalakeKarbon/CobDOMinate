@@ -328,5 +328,5 @@ EM_JS(int, cd_src, (int variable_name,int src), {
 int cobdom_src(char *variable_name, char *src) { 
 	cobdom_string(variable_name);
 	cobdom_string(src);
-	return cd_href((intptr_t)variable_name,(intptr_t)src);
+	return cd_src((intptr_t)variable_name,(intptr_t)src);
 }
