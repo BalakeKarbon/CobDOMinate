@@ -273,7 +273,7 @@ EM_JS(int, cd_fetch, (int func,int url,int method,int body), {
 			//Module.ccall(cobolFunc, null, ['string'], ['test text']);
 			let len = data.byteLength;
 			let ptr = _malloc(len);
-			if (ptr === 0) throw new Error("  Fetch: Malloc failed");
+			if (ptr === 0) throw new Error("Malloc failed");
 			let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
 			heapBytes.set(new Uint8Array(data));
 			Module.ccall(cobolFunc, null, ['string','number'], [len.toString().padStart(10,'0'),ptr]);
@@ -329,4 +329,27 @@ int cobdom_src(char *variable_name, char *src) {
 	cobdom_string(variable_name);
 	cobdom_string(src);
 	return cd_src((intptr_t)variable_name,(intptr_t)src);
+}
+EM_JS(int, cd_eval, (int func,int jscode), {
+	try {
+		let cobolFunc = UTF8ToString(func);
+		let jsCode = UTF8ToString(jscode);
+		let data = new TextEncoder().encode(eval(jsCode).toString()).buffer;
+		let len = data.byteLength;
+		let ptr = _malloc(len);
+		if (ptr === 0) throw new Error("Malloc failed");
+		let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
+		heapBytes.set(new Uint8Array(data));
+		Module.ccall(cobolFunc, null, ['string','number'], [len.toString().padStart(10,'0'),ptr]);
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Eval: ' + e);
+		return -1;
+	}
+});
+int cobdom_eval(char *func, char *jscode) {
+	cobdom_string(func);
+	cobdom_string(jscode);
+	return cd_eval((intptr_t)func,(intptr_t)jscode);
 }
