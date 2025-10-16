@@ -357,3 +357,22 @@ int cobdom_eval(char *data_size,char *data,char *jscode) {
 	cobdom_string(jscode);
 	return cd_eval((intptr_t)data_size,(intptr_t)data,(intptr_t)jscode);
 }
+EM_JS(int, cd_timeout, (int func,int time), {
+	try {
+		let cobolFunc = UTF8ToString(func);
+		let cobolTime = parseInt(UTF8ToString(time));
+		setTimeout(() => {
+			Module.ccall(cobolFunc, null, [], []);
+		},cobolTime);
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Fetch: ' + e);
+		return -1;
+	}
+});
+int cobdom_timeout(char *func, char *time) {
+	cobdom_string(func);
+	cobdom_string(time);
+	return cd_timeout((intptr_t)func,(intptr_t)time);
+}
