@@ -357,11 +357,12 @@ int cobdom_eval(char *data_size,char *data,char *jscode) {
 	cobdom_string(jscode);
 	return cd_eval((intptr_t)data_size,(intptr_t)data,(intptr_t)jscode);
 }
-EM_JS(int, cd_timeout, (int func,int time), {
+EM_JS(int, cd_set_timeout, (int variable_name,int func,int time), {
 	try {
+		let variableName = UTF8ToString(variableName);
 		let cobolFunc = UTF8ToString(func);
 		let cobolTime = parseInt(UTF8ToString(time));
-		setTimeout(() => {
+		window[variableName] = setTimeout(() => {
 			Module.ccall(cobolFunc, null, [], []);
 		},cobolTime);
 		return 1;
@@ -371,8 +372,24 @@ EM_JS(int, cd_timeout, (int func,int time), {
 		return -1;
 	}
 });
-int cobdom_timeout(char *func, char *time) {
+int cobdom_set_timeout(char *variable_name,char *func, char *time) {
+	cobdom_string(variable_name);
 	cobdom_string(func);
 	cobdom_string(time);
-	return cd_timeout((intptr_t)func,(intptr_t)time);
+	return cd_set_timeout((intptr_t)variable_name,(intptr_t)func,(intptr_t)time);
+}
+EM_JS(int, cd_clear_timeout, (int variable_name), {
+	try {
+		let variableName = UTF8ToString(variableName);
+		clearTimeout(window[variableName]);
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Fetch: ' + e);
+		return -1;
+	}
+});
+int cobdom_clear_timeout(char *variable_name) {
+	cobdom_string(variable_name);
+	return cd_clear_timeout((intptr_t)variable_name);
 }
