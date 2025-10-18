@@ -359,7 +359,7 @@ int cobdom_eval(char *data_size,char *data,char *jscode) {
 }
 EM_JS(int, cd_set_timeout, (int variable_name,int func,int time), {
 	try {
-		let variableName = UTF8ToString(variableName);
+		let variableName = UTF8ToString(variable_name);
 		let cobolFunc = UTF8ToString(func);
 		let cobolTime = parseInt(UTF8ToString(time));
 		window[variableName] = setTimeout(() => {
@@ -368,7 +368,7 @@ EM_JS(int, cd_set_timeout, (int variable_name,int func,int time), {
 		return 1;
 	} catch (e) {
 		console.error('CobDOMinate Error:');
-		console.error('  Fetch: ' + e);
+		console.error('  Set Timeout: ' + e);
 		return -1;
 	}
 });
@@ -380,12 +380,12 @@ int cobdom_set_timeout(char *variable_name,char *func, char *time) {
 }
 EM_JS(int, cd_clear_timeout, (int variable_name), {
 	try {
-		let variableName = UTF8ToString(variableName);
+		let variableName = UTF8ToString(variable_name);
 		clearTimeout(window[variableName]);
 		return 1;
 	} catch (e) {
 		console.error('CobDOMinate Error:');
-		console.error('  Fetch: ' + e);
+		console.error('  Clear Timeout: ' + e);
 		return -1;
 	}
 });
