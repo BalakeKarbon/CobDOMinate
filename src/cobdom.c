@@ -398,7 +398,7 @@ EM_JS(int, cd_font_face, (int font_family, int font_source, int cobol_func), {
 		let fontFamily = UTF8ToString(font_family);
 		let fontSource = UTF8ToString(font_source);
 		let cobolFunc = UTF8ToString(cobol_func);
-		let newFont = new Font(fontFamily, fontSource);
+		let newFont = new FontFace(fontFamily, fontSource);
 		newFont.load().then(function() {
 			Module.ccall(cobolFunc, null, [], []);
 		}).catch(function(error) {
