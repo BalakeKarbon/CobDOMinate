@@ -393,3 +393,28 @@ int cobdom_clear_timeout(char *variable_name) {
 	cobdom_string(variable_name);
 	return cd_clear_timeout((intptr_t)variable_name);
 }
+EM_JS(int, cd_font_face, (int font_family, int font_source, int cobol_func), {
+	try {
+		let fontFamily = UTF8ToString(font_family);
+		let fontSource = UTF8ToString(font_source);
+		let cobolFunc = UTF8ToString(cobol_func);
+		let newFont = new Font(fontFamily, fontSource);
+		newFont.load().then(function() {
+			Module.ccall(cobolFunc, null, [], []);
+		}).catch(function(error) {
+			throw new Error(error);
+		});;
+		document.fonts.add(newFont);
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Font Face: ' + e);
+		return -1;
+	}
+});
+int cobdom_font_face(char *font_family, char *font_source,char *cobol_func) {
+	cobdom_string(font_family);
+	cobdom_string(font_source);
+	cobdom_string(cobol_func);
+	return cd_font_face((intptr_t)font_family,(intptr_t)font_source,(intptr_t)cobol_func);
+}
