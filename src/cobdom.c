@@ -277,6 +277,7 @@ EM_JS(int, cd_fetch, (int func,int url,int method,int body), {
 			let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
 			heapBytes.set(new Uint8Array(data));
 			Module.ccall(cobolFunc, null, ['string','number'], [len.toString().padStart(10,'0'),ptr]);
+			_free(ptr);
 			//Module.ccall('cob_call', null, ['string','number','array'], [cobolFunc,2,[data.byteLength | 0,new TextDecoder().decode(data)]]);
 //TO-DO: We either have to figure out how to get an int passed to our cobol function correctly or we need to start calling using cob_call_cobol
 		}).catch(error => {
