@@ -394,6 +394,57 @@ int cobdom_clear_timeout(char *variable_name) {
 	cobdom_string(variable_name);
 	return cd_clear_timeout((intptr_t)variable_name);
 }
+EM_JS(int, cd_set_interval, (int variable_name,int func,int time), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let cobolFunc = UTF8ToString(func);
+		let cobolTime = parseInt(UTF8ToString(time));
+		window[variableName] = setInterval(() => {
+			Module.ccall(cobolFunc, null, [], []);
+		},cobolTime);
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Set Timeout: ' + e);
+		return -1;
+	}
+});
+int cobdom_set_interval(char *variable_name,char *func, char *time) {
+	cobdom_string(variable_name);
+	cobdom_string(func);
+	cobdom_string(time);
+	return cd_set_interval((intptr_t)variable_name,(intptr_t)func,(intptr_t)time);
+}
+EM_JS(int, cd_clear_interval, (int variable_name), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		clearInterval(window[variableName]);
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Clear Timeout: ' + e);
+		return -1;
+	}
+});
+int cobdom_clear_interval(char *variable_name) {
+	cobdom_string(variable_name);
+	return cd_clear_interval((intptr_t)variable_name);
+}
+EM_JS(int, cd_scroll_into_view, (int variable_name), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		window[variableName].scrollIntoView();
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Clear Timeout: ' + e);
+		return -1;
+	}
+});
+int cobdom_scroll_into_view(char *variable_name) {
+	cobdom_string(variable_name);
+	return cd_scroll_into_view((intptr_t)variable_name);
+}
 EM_JS(int, cd_font_face, (int font_family, int font_source, int cobol_func), {
 	try {
 		let fontFamily = UTF8ToString(font_family);
