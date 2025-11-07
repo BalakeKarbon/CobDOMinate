@@ -470,3 +470,18 @@ int cobdom_font_face(char *font_family, char *font_source,char *cobol_func) {
 	cobdom_string(cobol_func);
 	return cd_font_face((intptr_t)font_family,(intptr_t)font_source,(intptr_t)cobol_func);
 }
+EM_JS(int, cd_open_tab, (int location_url), {
+	try {
+		let locationURL = UTF8ToString(location_url);
+		window.open(locationURL, "_blank");
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Open Tab: ' + e);
+		return -1;
+	}
+});
+int cobdom_open_tab(char *location_url) {
+	cobdom_string(location_url);
+	return cd_open_tab((intptr_t)location_url);
+}
