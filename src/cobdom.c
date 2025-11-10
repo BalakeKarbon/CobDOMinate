@@ -1,8 +1,7 @@
 #include <emscripten.h>
 #include <stdint.h>
-//#include <libcob.h>
 
-char* cobdom_string(char* cobol_string) {
+void cobdom_string(char* cobol_string) {
 	int len = 0;
 	while (cobol_string[len] != '\0') {
 		len++;
