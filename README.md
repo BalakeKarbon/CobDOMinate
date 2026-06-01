@@ -40,4 +40,7 @@ cobdom_src int cobdom_src(char *variable_name, char *src) {
 cobdom_string void cobdom_string(char* cobol_string) {
 cobdom_style int cobdom_style(char *variable_name, char *style_key, char *style_value) {
 cobdom_test_string int cobdom_test_string(char* my_string) {
+cobdom_websocket_close int cobdom_websocket_close(char *variable_name) {
+cobdom_websocket_connect int cobdom_websocket_connect(char *variable_name, char *url, char *open_func, char *message_func, char *error_func) {
+cobdom_websocket_send int cobdom_websocket_send(char *variable_name, char *data) {
 ```

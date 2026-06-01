@@ -484,3 +484,121 @@ int cobdom_open_tab(char *location_url) {
 	cobdom_string(location_url);
 	return cd_open_tab((intptr_t)location_url);
 }
+
+EM_JS(int, cd_websocket_connect, (int variable_name, int url, int open_func, int message_func, int error_func), {
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let urlString = UTF8ToString(url);
+		let openFunc = UTF8ToString(open_func);
+		let messageFunc = UTF8ToString(message_func);
+		let errorFunc = UTF8ToString(error_func);
+		let ws = new WebSocket(urlString);
+        
+        ws.onopen = function(event) {
+            if (openFunc) Module.ccall(openFunc, null, [], []);
+        };
+        ws.onmessage = function(event) {
+            if (messageFunc) {
+                Module.ccall(messageFunc, null, ['string'], [event.data]);
+            }
+        };
+        ws.onerror = function(event) {
+            if (errorFunc) Module.ccall(errorFunc, null, [], []);
+        };
+        
+        window[variableName] = ws;
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  WebSocket Connect: ' + e);
+		return -1;
+	}
+});
+
+int cobdom_websocket_connect(char *variable_name, char *url, char *open_func, char *message_func, char *error_func) {
+	cobdom_string(variable_name);
+	cobdom_string(url);
+	cobdom_string(open_func);
+	cobdom_string(message_func);
+	cobdom_string(error_func);
+	return cd_websocket_connect((intptr_t)variable_name,(intptr_t)url,(intptr_t)open_func,(intptr_t)message_func,(intptr_t)error_func);
+}
+
+EM_JS(int, cd_websocket_send, (int variable_name, int data), {
+    try {
+        let variableName = UTF8ToString(variable_name);
+        let dataString = UTF8ToString(data);
+        if (window[variableName].readyState === WebSocket.OPEN) {
+            window[variableName].send(dataString);
+            return 1;
+        } else {
+            console.error('CobDOMinate Error: WebSocket not open');
+            return -1;
+        }
+    } catch(e) {
+        console.error('CobDOMinate Error:');
+        console.error('  WebSocket Send: ' + e);
+        return -1;
+    }
+});
+
+int cobdom_websocket_send(char *variable_name, char *data) {
+	cobdom_string(variable_name);
+	cobdom_string(data);
+	return cd_websocket_send((intptr_t)variable_name,(intptr_t)data);
+}
+
+EM_JS(int, cd_websocket_close, (int variable_name), {
+    try {
+        let variableName = UTF8ToString(variable_name);
+        window[variableName].close();
+        return 1;
+    } catch(e) {
+        console.error('CobDOMinate Error:');
+        console.error('  WebSocket Close: ' + e);
+        return -1;
+    }
+});
+
+int cobdom_websocket_close(char *variable_name) {
+	cobdom_string(variable_name);
+	return cd_websocket_close((intptr_t)variable_name);
+}
+
+EM_JS(int, cd_get_value, (int data, int variable_name), {
+    try {
+        let variableName = UTF8ToString(variable_name);
+        let val = window[variableName].value;
+        stringToUTF8(val, data, 1024);
+        return 1;
+    } catch (e) {
+        console.error('CobDOMinate Error:');
+        console.error('  Get Value: ' + e);
+        return -1;
+    }
+});
+
+int cobdom_get_value(char *data, char *variable_name) {
+    cobdom_string(variable_name);
+    return cd_get_value((intptr_t)data, (intptr_t)variable_name);
+}
+
+EM_JS(int, cd_append_html, (int div_id, int html_content), {
+    try {
+        let divId = UTF8ToString(div_id);
+        let htmlContent = UTF8ToString(html_content);
+        window[divId].innerHTML += '<p>' + htmlContent + '</p>';
+        return 1;
+    } catch (e) {
+        console.error('CobDOMinate Error:');
+        console.error('  Append HTML: ' + e);
+        return -1;
+    }
+});
+
+int cobdom_append_html(char *div_id, char *html_content) {
+    cobdom_string(div_id);
+    cobdom_string(html_content);
+    return cd_append_html((intptr_t)div_id, (intptr_t)html_content);
+}
+
