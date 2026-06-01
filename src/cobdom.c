@@ -493,13 +493,23 @@ EM_JS(int, cd_websocket_connect, (int variable_name, int url, int open_func, int
 		let messageFunc = UTF8ToString(message_func);
 		let errorFunc = UTF8ToString(error_func);
 		let ws = new WebSocket(urlString);
+        ws.binaryType = 'arraybuffer';
         
         ws.onopen = function(event) {
             if (openFunc) Module.ccall(openFunc, null, [], []);
         };
         ws.onmessage = function(event) {
             if (messageFunc) {
-                Module.ccall(messageFunc, null, ['string'], [event.data]);
+                if (event.data instanceof ArrayBuffer) {
+                    let len = event.data.byteLength;
+                    let ptr = _malloc(len);
+                    let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
+                    heapBytes.set(new Uint8Array(event.data));
+                    Module.ccall(messageFunc, null, ['number', 'number'], [len, ptr]);
+                    _free(ptr);
+                } else {
+                    Module.ccall(messageFunc, null, ['string'], [event.data]);
+                }
             }
         };
         ws.onerror = function(event) {
@@ -546,6 +556,29 @@ int cobdom_websocket_send(char *variable_name, char *data) {
 	cobdom_string(variable_name);
 	cobdom_string(data);
 	return cd_websocket_send((intptr_t)variable_name,(intptr_t)data);
+}
+
+EM_JS(int, cd_websocket_send_binary, (int variable_name, int data_len, int data_ptr), {
+    try {
+        let variableName = UTF8ToString(variable_name);
+        let data = new Uint8Array(Module.HEAP8.buffer, data_ptr, data_len);
+        if (window[variableName].readyState === WebSocket.OPEN) {
+            window[variableName].send(data);
+            return 1;
+        } else {
+            console.error('CobDOMinate Error: WebSocket not open');
+            return -1;
+        }
+    } catch(e) {
+        console.error('CobDOMinate Error:');
+        console.error('  WebSocket Send Binary: ' + e);
+        return -1;
+    }
+});
+
+int cobdom_websocket_send_binary(char *variable_name, int data_len, char *data_ptr) {
+    cobdom_string(variable_name);
+    return cd_websocket_send_binary((intptr_t)variable_name, data_len, (intptr_t)data_ptr);
 }
 
 EM_JS(int, cd_websocket_close, (int variable_name), {
