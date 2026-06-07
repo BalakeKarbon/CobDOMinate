@@ -45,5 +45,4 @@ cobdom_test_string int cobdom_test_string(char* my_string) {
 cobdom_websocket_close int cobdom_websocket_close(char *variable_name) {
 cobdom_websocket_connect int cobdom_websocket_connect(char *variable_name, char *url, char *open_func, char *message_func, char *error_func) {
 cobdom_websocket_send int cobdom_websocket_send(char *variable_name, char *data) {
-cobdom_websocket_send_binary int cobdom_websocket_send_binary(char *variable_name, int data_len, char *data_ptr) {
 ```
