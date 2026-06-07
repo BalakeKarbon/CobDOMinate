@@ -18,6 +18,7 @@ Bellow is all currently available procedures for the library. You will note they
 ```
 cobdom_add_event_listener int cobdom_add_event_listener(char *variable_name, char *event_type, char *cobol_func) {
 cobdom_append_child int cobdom_append_child(char *variable_name, char *parent_name) {
+cobdom_append_html int cobdom_append_html(char *div_id, char *html_content) {
 cobdom_class_style int cobdom_class_style(char *class_name, char *style_key, char *style_value) {
 cobdom_clear_interval int cobdom_clear_interval(char *variable_name) {
 cobdom_clear_timeout int cobdom_clear_timeout(char *variable_name) {
@@ -26,6 +27,7 @@ cobdom_eval int cobdom_eval(char *data_size,char *data,char *jscode) {
 cobdom_fetch int cobdom_fetch(char *func, char *url, char *method, char *body) {
 cobdom_font_face int cobdom_font_face(char *font_family, char *font_source,char *cobol_func) {
 cobdom_get_cookie int cobdom_get_cookie(char *data, char *cookie_name) {
+cobdom_get_value int cobdom_get_value(char *data, char *variable_name) {
 cobdom_href int cobdom_href(char *variable_name, char *href) {
 cobdom_inner_html int cobdom_inner_html(char *variable_name, char *html_content) {
 cobdom_open_tab int cobdom_open_tab(char *location_url) {
@@ -43,4 +45,5 @@ cobdom_test_string int cobdom_test_string(char* my_string) {
 cobdom_websocket_close int cobdom_websocket_close(char *variable_name) {
 cobdom_websocket_connect int cobdom_websocket_connect(char *variable_name, char *url, char *open_func, char *message_func, char *error_func) {
 cobdom_websocket_send int cobdom_websocket_send(char *variable_name, char *data) {
+cobdom_websocket_send_binary int cobdom_websocket_send_binary(char *variable_name, int data_len, char *data_ptr) {
 ```
