@@ -4,6 +4,12 @@ DEBUG_DIR := ./example
 EXAMPLE_BASE_FLAGS = $(shell ctags -x --c-kinds=f $(SRC_DIR)/cobdom.c | awk '{printf "-K %s ", $$1}' | sed 's/ $$//') 
 LIB_INSTALL_DIR = /root/sources/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten
 
+ENABLE_SDL ?= 0
+CFLAGS = 
+ifeq ($(ENABLE_SDL), 1)
+    CFLAGS += -DCOBDOM_ENABLE_SDL -s USE_SDL=2
+endif
+
 all: $(BUILD_DIR)/lib/libcobdom.a
 
 install: all
@@ -22,7 +28,7 @@ $(BUILD_DIR)/lib/libcobdom.a: $(BUILD_DIR)/cobdom.o $(BUILD_DIR)/lib
 	emar rcs $@ $<
 
 $(BUILD_DIR)/cobdom.o: $(SRC_DIR)/cobdom.c | $(BUILD_DIR)
-	emcc -c $< -o $@
+	emcc -c $< -o $@ $(CFLAGS)
 
 $(BUILD_DIR)/example: $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)/example
@@ -31,7 +37,7 @@ $(BUILD_DIR)/example/example.c: all | $(BUILD_DIR)/example
 	cobc -C -o $@ ./example/example.cob $(EXAMPLE_BASE_FLAGS) -K LAYOUT -K FETCHCALLBACK -K TAB1 -K TAB2 -K TAB3
 
 $(BUILD_DIR)/example/example.js: $(BUILD_DIR)/example/example.c
-	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob -s EXPORTED_FUNCTIONS=_cob_init,_EXAMPLE,_LAYOUT,_FETCHCALLBACK,_TAB1,_TAB2,_TAB3 -s EXPORTED_RUNTIME_METHODS=ccall,cwrap,_malloc,HEAP8
+	emcc -o $@ $< $(BUILD_DIR)/lib/libcobdom.a -lgmp -lcob $(CFLAGS) -s EXPORTED_FUNCTIONS=_cob_init,_EXAMPLE,_LAYOUT,_FETCHCALLBACK,_TAB1,_TAB2,_TAB3 -s EXPORTED_RUNTIME_METHODS=ccall,cwrap,_malloc,HEAP8
 
 example: $(BUILD_DIR)/example/example.js 
 	cp $(DEBUG_DIR)/index.html $(BUILD_DIR)/example/index.html
