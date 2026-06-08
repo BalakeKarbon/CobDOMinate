@@ -1,5 +1,9 @@
 #include <emscripten.h>
 #include <stdint.h>
+#include <libcob.h>
+#ifdef COBDOM_ENABLE_SDL
+#include <SDL2/SDL.h>
+#endif
 
 void cobdom_string(char* cobol_string) {
 	int len = 0;
@@ -330,22 +334,40 @@ int cobdom_src(char *variable_name, char *src) {
 	cobdom_string(src);
 	return cd_src((intptr_t)variable_name,(intptr_t)src);
 }
-EM_JS(int, cd_eval, (int data_size,int data,int jscode), {
+//EM_JS(int, cd_eval, (int data_size,int data,int jscode), {
+//	try {
+//		let jsCode = UTF8ToString(jscode);
+//		let evalReturn = eval(jsCode).toString();
+//		stringToUTF8(evalReturn, data, evalReturn.length+1);
+//		stringToUTF8(evalReturn.length.toString().padStart(10,'0'),data_size,11);
+//		//let evalReturn = new TextEncoder().encode(eval(jsCode).toString()).buffer;
+//		//let len = evalReturn.byteLength;
+//		//console.log(len);
+//		//let ptr = _malloc(len);
+//		//if (ptr === 0) throw new Error("Malloc failed");
+//		//let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
+//		//heapBytes.set(new Uint8Array(evalReturn));
+//		//stringToUTF8(len.toString().padStart(10,'0'), data_size, 10);
+//		//data = ptr;
+//		//Module.ccall(cobolFunc, null, ['string','number'], [len.toString().padStart(10,'0'),ptr]);
+//		return 1;
+//	} catch (e) {
+//		console.error('CobDOMinate Error:');
+//		console.error('  Eval: ' + e);
+//		return -1;
+//	}
+//});
+
+EM_JS(int, cd_eval, (int data_size, int data, int jscode), {
 	try {
 		let jsCode = UTF8ToString(jscode);
-		let evalReturn = eval(jsCode).toString();
-		stringToUTF8(evalReturn, data, evalReturn.length+1);
-		stringToUTF8(evalReturn.length.toString().padStart(10,'0'),data_size,11);
-		//let evalReturn = new TextEncoder().encode(eval(jsCode).toString()).buffer;
-		//let len = evalReturn.byteLength;
-		//console.log(len);
-		//let ptr = _malloc(len);
-		//if (ptr === 0) throw new Error("Malloc failed");
-		//let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
-		//heapBytes.set(new Uint8Array(evalReturn));
-		//stringToUTF8(len.toString().padStart(10,'0'), data_size, 10);
-		//data = ptr;
-		//Module.ccall(cobolFunc, null, ['string','number'], [len.toString().padStart(10,'0'),ptr]);
+		let evalResult = eval(jsCode);
+		// Guard against undefined/null (e.g. console.log returns undefined)
+		let evalReturn = (evalResult !== undefined && evalResult !== null)
+			? evalResult.toString()
+			: '';
+		stringToUTF8(evalReturn, data, evalReturn.length + 1);
+		stringToUTF8(evalReturn.length.toString().padStart(10, '0'), data_size, 11);
 		return 1;
 	} catch (e) {
 		console.error('CobDOMinate Error:');
@@ -493,30 +515,30 @@ EM_JS(int, cd_websocket_connect, (int variable_name, int url, int open_func, int
 		let messageFunc = UTF8ToString(message_func);
 		let errorFunc = UTF8ToString(error_func);
 		let ws = new WebSocket(urlString);
-        ws.binaryType = 'arraybuffer';
-        
-        ws.onopen = function(event) {
-            if (openFunc) Module.ccall(openFunc, null, [], []);
-        };
-        ws.onmessage = function(event) {
-            if (messageFunc) {
-                if (event.data instanceof ArrayBuffer) {
-                    let len = event.data.byteLength;
-                    let ptr = _malloc(len);
-                    let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
-                    heapBytes.set(new Uint8Array(event.data));
-                    Module.ccall(messageFunc, null, ['number', 'number'], [len, ptr]);
-                    _free(ptr);
-                } else {
-                    Module.ccall(messageFunc, null, ['string'], [event.data]);
-                }
-            }
-        };
-        ws.onerror = function(event) {
-            if (errorFunc) Module.ccall(errorFunc, null, [], []);
-        };
-        
-        window[variableName] = ws;
+		ws.binaryType = 'arraybuffer';
+		
+		ws.onopen = function(event) {
+			if (openFunc) Module.ccall(openFunc, null, [], []);
+		};
+		ws.onmessage = function(event) {
+			if (messageFunc) {
+				if (event.data instanceof ArrayBuffer) {
+					let len = event.data.byteLength;
+					let ptr = _malloc(len);
+					let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
+					heapBytes.set(new Uint8Array(event.data));
+					Module.ccall(messageFunc, null, ['number', 'number'], [len, ptr]);
+					_free(ptr);
+				} else {
+					Module.ccall(messageFunc, null, ['string'], [event.data]);
+				}
+			}
+		};
+		ws.onerror = function(event) {
+			if (errorFunc) Module.ccall(errorFunc, null, [], []);
+		};
+		
+		window[variableName] = ws;
 		return 1;
 	} catch (e) {
 		console.error('CobDOMinate Error:');
@@ -535,21 +557,21 @@ int cobdom_websocket_connect(char *variable_name, char *url, char *open_func, ch
 }
 
 EM_JS(int, cd_websocket_send, (int variable_name, int data), {
-    try {
-        let variableName = UTF8ToString(variable_name);
-        let dataString = UTF8ToString(data);
-        if (window[variableName].readyState === WebSocket.OPEN) {
-            window[variableName].send(dataString);
-            return 1;
-        } else {
-            console.error('CobDOMinate Error: WebSocket not open');
-            return -1;
-        }
-    } catch(e) {
-        console.error('CobDOMinate Error:');
-        console.error('  WebSocket Send: ' + e);
-        return -1;
-    }
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let dataString = UTF8ToString(data);
+		if (window[variableName].readyState === WebSocket.OPEN) {
+			window[variableName].send(dataString);
+			return 1;
+		} else {
+			console.error('CobDOMinate Error: WebSocket not open');
+			return -1;
+		}
+	} catch(e) {
+		console.error('CobDOMinate Error:');
+		console.error('  WebSocket Send: ' + e);
+		return -1;
+	}
 });
 
 int cobdom_websocket_send(char *variable_name, char *data) {
@@ -559,15 +581,15 @@ int cobdom_websocket_send(char *variable_name, char *data) {
 }
 
 EM_JS(int, cd_websocket_close, (int variable_name), {
-    try {
-        let variableName = UTF8ToString(variable_name);
-        window[variableName].close();
-        return 1;
-    } catch(e) {
-        console.error('CobDOMinate Error:');
-        console.error('  WebSocket Close: ' + e);
-        return -1;
-    }
+	try {
+		let variableName = UTF8ToString(variable_name);
+		window[variableName].close();
+		return 1;
+	} catch(e) {
+		console.error('CobDOMinate Error:');
+		console.error('  WebSocket Close: ' + e);
+		return -1;
+	}
 });
 
 int cobdom_websocket_close(char *variable_name) {
@@ -576,39 +598,80 @@ int cobdom_websocket_close(char *variable_name) {
 }
 
 EM_JS(int, cd_get_value, (int data, int variable_name), {
-    try {
-        let variableName = UTF8ToString(variable_name);
-        let val = window[variableName].value;
-        stringToUTF8(val, data, 1024);
-        return 1;
-    } catch (e) {
-        console.error('CobDOMinate Error:');
-        console.error('  Get Value: ' + e);
-        return -1;
-    }
+	try {
+		let variableName = UTF8ToString(variable_name);
+		let val = window[variableName].value;
+		stringToUTF8(val, data, 1024);
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Get Value: ' + e);
+		return -1;
+	}
 });
 
 int cobdom_get_value(char *data, char *variable_name) {
-    cobdom_string(variable_name);
-    return cd_get_value((intptr_t)data, (intptr_t)variable_name);
+	cobdom_string(variable_name);
+	return cd_get_value((intptr_t)data, (intptr_t)variable_name);
 }
 
 EM_JS(int, cd_append_html, (int div_id, int html_content), {
-    try {
-        let divId = UTF8ToString(div_id);
-        let htmlContent = UTF8ToString(html_content);
-        window[divId].innerHTML += '<p>' + htmlContent + '</p>';
-        return 1;
-    } catch (e) {
-        console.error('CobDOMinate Error:');
-        console.error('  Append HTML: ' + e);
-        return -1;
-    }
+	try {
+		let divId = UTF8ToString(div_id);
+		let htmlContent = UTF8ToString(html_content);
+		window[divId].innerHTML += '<p>' + htmlContent + '</p>';
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Append HTML: ' + e);
+		return -1;
+	}
 });
 
 int cobdom_append_html(char *div_id, char *html_content) {
-    cobdom_string(div_id);
-    cobdom_string(html_content);
-    return cd_append_html((intptr_t)div_id, (intptr_t)html_content);
+	cobdom_string(div_id);
+	cobdom_string(html_content);
+	return cd_append_html((intptr_t)div_id, (intptr_t)html_content);
 }
 
+EM_JS(int, cd_loop, (int func), {
+	try {
+		let cobolFunc = UTF8ToString(func);
+		Module.ccall(cobolFunc, null, [], []);
+		return 1;
+	} catch (e) {
+		console.error('CobDOMinate Error:');
+		console.error('  Main Loop: ' + e);
+		return -1;
+	}
+});
+
+void cobdom_main_loop(void *func) {
+	//char js[256];
+	//snprintf(js,sizeof(js),"console.log(`%s`);",func);
+	//cobdom_eval("","",js);
+	//cob_call(func,0,NULL);
+	//cob_call("MAIN",0,NULL);
+	cd_loop((intptr_t)func);
+}
+
+int cobdom_set_and_start_main_loop(char *func) {
+	cobdom_string(func);
+	//int (*func_ptr)() = cob_resolve(func);
+	//char js[256];
+	//if(func_ptr) {
+	//	snprintf(js,sizeof(js),"console.log(`%s`);","GOOD?");
+	//	cobdom_eval("","",js);
+	//} else {
+	//	snprintf(js,sizeof(js),"console.log(`%s`);","FUCK");
+	//	cobdom_eval("","",js);
+	//}
+	//cob_call(func,0,NULL);
+	//emscripten_set_main_loop((void (*)(void))func_ptr, 0, 0);
+	emscripten_set_main_loop_arg(cobdom_main_loop,func, 0, 0);
+}
+
+#ifdef COBDOM_ENABLE_SDL
+
+
+#endif

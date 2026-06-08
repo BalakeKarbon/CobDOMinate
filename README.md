@@ -32,10 +32,12 @@ cobdom_get_cookie int cobdom_get_cookie(char *data, char *cookie_name) {
 cobdom_get_value int cobdom_get_value(char *data, char *variable_name) {
 cobdom_href int cobdom_href(char *variable_name, char *href) {
 cobdom_inner_html int cobdom_inner_html(char *variable_name, char *html_content) {
+cobdom_main_loop void cobdom_main_loop(void *func) {
 cobdom_open_tab int cobdom_open_tab(char *location_url) {
 cobdom_remove_child int cobdom_remove_child(char *variable_name, char *parent_name) {
 cobdom_remove_event_listener int cobdom_remove_event_listener(char *variable_name, char *event_type) {
 cobdom_scroll_into_view int cobdom_scroll_into_view(char *variable_name) {
+cobdom_set_and_start_main_loop int cobdom_set_and_start_main_loop(char *func) {
 cobdom_set_class int cobdom_set_class(char *variable_name, char *class_name) {
 cobdom_set_cookie int cobdom_set_cookie(char *data, char *cookie_name) {
 cobdom_set_interval int cobdom_set_interval(char *variable_name,char *func, char *time) {
