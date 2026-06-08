@@ -669,9 +669,13 @@ int cobdom_set_and_start_main_loop(char *func) {
 	//cob_call(func,0,NULL);
 	//emscripten_set_main_loop((void (*)(void))func_ptr, 0, 0);
 	emscripten_set_main_loop_arg(cobdom_main_loop,func, 0, 0);
+	return 1;
+}
+int cobdom_cancel_main_loop() {
+	emscripten_cancel_main_loop();
+	return 1;
 }
 
 #ifdef COBDOM_ENABLE_SDL
-
 
 #endif

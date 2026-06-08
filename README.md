@@ -21,6 +21,7 @@ Bellow is all currently available procedures for the library. You will note they
 cobdom_add_event_listener int cobdom_add_event_listener(char *variable_name, char *event_type, char *cobol_func) {
 cobdom_append_child int cobdom_append_child(char *variable_name, char *parent_name) {
 cobdom_append_html int cobdom_append_html(char *div_id, char *html_content) {
+cobdom_cancel_main_loop int cobdom_cancel_main_loop() {
 cobdom_class_style int cobdom_class_style(char *class_name, char *style_key, char *style_value) {
 cobdom_clear_interval int cobdom_clear_interval(char *variable_name) {
 cobdom_clear_timeout int cobdom_clear_timeout(char *variable_name) {
