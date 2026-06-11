@@ -4,16 +4,16 @@ DEBUG_DIR := ./example
 EXAMPLE_BASE_FLAGS = $(shell ctags -x --c-kinds=f $(SRC_DIR)/cobdom.c | awk '{printf "-K %s ", $$1}' | sed 's/ $$//') 
 LIB_INSTALL_DIR = /root/sources/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten
 
-ENABLE_SDL ?= 0
-ENABLE_OPENGL ?= 0
-CFLAGS = 
-ifeq ($(ENABLE_SDL), 1)
-    CFLAGS += -DCOBDOM_ENABLE_SDL -s USE_SDL=2
-endif
-
-ifeq ($(ENABLE_OPENGL), 1)
-    CFLAGS += -DCOBDOM_ENABLE_OPENGL
-endif
+#ENABLE_SDL ?= 0
+#ENABLE_OPENGL ?= 0
+#CFLAGS = 
+#ifeq ($(ENABLE_SDL), 1)
+#    CFLAGS += -DCOBDOM_ENABLE_SDL -s USE_SDL=2
+#endif
+#
+#ifeq ($(ENABLE_OPENGL), 1)
+#    CFLAGS += -DCOBDOM_ENABLE_OPENGL
+#endif
 
 
 all: $(BUILD_DIR)/lib/libcobdom.a

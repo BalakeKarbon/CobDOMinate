@@ -634,11 +634,12 @@ int cobdom_cancel_main_loop() {
 	return 1;
 }
 
-#ifdef COBDOM_ENABLE_SDL
-#include <SDL2/SDL.h>
-
-#ifdef COBDOM_ENABLE_OPENGL
-#include <GLES2/gl2.h>
-
-#endif // COBDOM_ENABLE_OPENGL
-#endif // COBDOM_ENABLE_SDL
+//#ifdef COBDOM_ENABLE_SDL
+//#include <SDL2/SDL.h>
+//#include <SDL2/SDL_mixer.h>
+//
+//#ifdef COBDOM_ENABLE_OPENGL
+//#include <GLES2/gl2.h>
+//
+//#endif // COBDOM_ENABLE_OPENGL
+//#endif // COBDOM_ENABLE_SDL

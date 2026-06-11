@@ -10,10 +10,7 @@ Dependencies include:
 
 To build, setup your EMSDK environemnt and verify it has its own GMP and GnuCOBOL libraries. Then run `make`.
 
-To build with SDL2 support add `ENABLE_SDL=1` to your `make` command.
-
-To build with OPENGL support add `ENABLE_OPENGL=1` to your `make` command.
-*Currently OPENGL support depends on SDL2 support.*
+*SDL2 / OpenGL can be interacted with directly*
 
 To install the library, veryfy the Makefile has the correct `LIB_INSTALL_DIR` and run `make install`.
 
