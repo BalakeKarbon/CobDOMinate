@@ -1,9 +1,6 @@
 #include <emscripten.h>
 #include <stdint.h>
 #include <libcob.h>
-#ifdef COBDOM_ENABLE_SDL
-#include <SDL2/SDL.h>
-#endif
 
 void cobdom_string(char* cobol_string) {
 	int len = 0;
@@ -334,29 +331,6 @@ int cobdom_src(char *variable_name, char *src) {
 	cobdom_string(src);
 	return cd_src((intptr_t)variable_name,(intptr_t)src);
 }
-//EM_JS(int, cd_eval, (int data_size,int data,int jscode), {
-//	try {
-//		let jsCode = UTF8ToString(jscode);
-//		let evalReturn = eval(jsCode).toString();
-//		stringToUTF8(evalReturn, data, evalReturn.length+1);
-//		stringToUTF8(evalReturn.length.toString().padStart(10,'0'),data_size,11);
-//		//let evalReturn = new TextEncoder().encode(eval(jsCode).toString()).buffer;
-//		//let len = evalReturn.byteLength;
-//		//console.log(len);
-//		//let ptr = _malloc(len);
-//		//if (ptr === 0) throw new Error("Malloc failed");
-//		//let heapBytes = new Uint8Array(Module.HEAP8.buffer, ptr, len);
-//		//heapBytes.set(new Uint8Array(evalReturn));
-//		//stringToUTF8(len.toString().padStart(10,'0'), data_size, 10);
-//		//data = ptr;
-//		//Module.ccall(cobolFunc, null, ['string','number'], [len.toString().padStart(10,'0'),ptr]);
-//		return 1;
-//	} catch (e) {
-//		console.error('CobDOMinate Error:');
-//		console.error('  Eval: ' + e);
-//		return -1;
-//	}
-//});
 
 EM_JS(int, cd_eval, (int data_size, int data, int jscode), {
 	try {
@@ -647,27 +621,11 @@ EM_JS(int, cd_loop, (int func), {
 });
 
 void cobdom_main_loop(void *func) {
-	//char js[256];
-	//snprintf(js,sizeof(js),"console.log(`%s`);",func);
-	//cobdom_eval("","",js);
-	//cob_call(func,0,NULL);
-	//cob_call("MAIN",0,NULL);
 	cd_loop((intptr_t)func);
 }
 
 int cobdom_set_and_start_main_loop(char *func) {
 	cobdom_string(func);
-	//int (*func_ptr)() = cob_resolve(func);
-	//char js[256];
-	//if(func_ptr) {
-	//	snprintf(js,sizeof(js),"console.log(`%s`);","GOOD?");
-	//	cobdom_eval("","",js);
-	//} else {
-	//	snprintf(js,sizeof(js),"console.log(`%s`);","FUCK");
-	//	cobdom_eval("","",js);
-	//}
-	//cob_call(func,0,NULL);
-	//emscripten_set_main_loop((void (*)(void))func_ptr, 0, 0);
 	emscripten_set_main_loop_arg(cobdom_main_loop,func, 0, 0);
 	return 1;
 }
@@ -677,5 +635,10 @@ int cobdom_cancel_main_loop() {
 }
 
 #ifdef COBDOM_ENABLE_SDL
+#include <SDL2/SDL.h>
 
-#endif
+#ifdef COBDOM_ENABLE_OPENGL
+#include <GLES2/gl2.h>
+
+#endif // COBDOM_ENABLE_OPENGL
+#endif // COBDOM_ENABLE_SDL
